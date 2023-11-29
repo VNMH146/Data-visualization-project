@@ -1,49 +1,53 @@
-// Set the dimensions of the canvas / graph
-var margin = { top: 30, right: 20, bottom: 30, left: 50 },
-  width = 600 - margin.left - margin.right,
-  height = 270 - margin.top - margin.bottom;
-
-// Set the ranges
-var x = d3.scaleBand().range([0, width]).padding(0.1);
-var y = d3.scaleLinear().range([height, 0]);
-
-// Add the SVG element
-var svg = d3.select("body")
-  .append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-// Load the data
-d3.csv("Data.csv", function (error, data) {
-  if (error) throw error;
-
-  // Convert the value to a number
-  data.forEach(function (d) {
-    d.value = +d.value;
+d3.csv("Data.csv").then(data => {
+  // Parse the data
+  data.forEach(d => {
+    for (let i = 2010; i <= 2023; i++) {
+      d[i] = +d[i];
+    }
   });
 
-  // Scale the range of the data
-  x.domain(data.map(function (d) { return d.label; }));
-  y.domain([0, d3.max(data, function (d) { return d.value; })]);
+  // Define the dimensions of the chart
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+  const width = 960 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
-  // Add the bar chart
-  svg.selectAll("bar")
-    .data(data)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function (d) { return x(d.label); })
-    .attr("width", x.bandwidth())
-    .attr("y", function (d) { return y(d.value); })
-    .attr("height", function (d) { return height - y(d.value); });
+  // Create the SVG container for the chart
+  const svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Add the X Axis
+  // Create the scales
+  const x = d3.scaleBand().range([-45, width]).padding(0.1);
+  const y = d3.scaleLinear().range([height, 0]);
+
+  // Set the domains of the scales
+  x.domain(data.map(d => d["Unemployment rate (Percent)"]));
+  y.domain([0, d3.max(data, d => d[2023])]);
+
+  // Add the x-axis
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x));
 
-  // Add the Y Axis
+  // Add the y-axis
   svg.append("g")
     .call(d3.axisLeft(y));
+
+
+  // Create the color scale
+  const color = d3.scaleSequential()
+    .domain([0, d3.max(data, d => d[2023])])
+    .interpolator(d3.interpolateBlues);
+  // Add the bars
+  svg.selectAll(".bar")
+    .data(data)
+    .enter().append("rect")
+    .attr("class", "bar")
+    .attr("x", d => x(d["Unemployment rate (Percent)"]))
+    .attr("width", x.bandwidth())
+    .attr("y", d => y(d[2023]))
+    .attr("height", d => height - y(d[2023]))
+    .attr("fill", d => color(d[2023]));
 });
