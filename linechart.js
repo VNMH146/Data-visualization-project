@@ -7,7 +7,7 @@ d3.csv("Data.csv").then((data) => {
   });
 
   // Define the dimensions of the chart
-  const margin = { top: 30, right: 40, bottom: 60, left: 50 };
+  const margin = { top: 30, right: 170, bottom: 100, left: 50 };
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
@@ -27,7 +27,7 @@ d3.csv("Data.csv").then((data) => {
   const color = d3.scaleOrdinal(d3.schemeCategory10);
   // Set the domains of the scales
   x.domain([2010, 2023]); // Assuming years from 2010 to 2023
-  y.domain([0, d3.max(data, (d) => d3.max(d3.values(d)))]); 
+  y.domain([0, d3.max(data, (d) => d3.max(d3.values(d)))]);
 
   // Add the x-axis
   svg
@@ -45,6 +45,7 @@ d3.csv("Data.csv").then((data) => {
     .y((d) => y(d));
 
   // Add the line
+  // Add the country name as label
   data.forEach((countryData, i) => {
     const countryValues = [];
     for (let i = 2010; i <= 2023; i++) {
@@ -59,16 +60,17 @@ d3.csv("Data.csv").then((data) => {
       .attr("stroke-width", 1.5)
       .attr("d", line);
 
-    // Add the country name as label
+    const maxCountryValue = d3.max(countryValues);
+
     svg
-    .append("text")
-    .attr("fill", color(i)) // Use the color scale here
-    .attr("stroke", "none")
-    .attr("x", x(2023)) // Adjust the x position to be within the chart area
-    .attr("y", y(countryValues[countryValues.length - 1]))
-    .attr("dy", ".35em")
-    .attr("text-anchor", "start")
-    .text(countryData["Country Name"]);
+      .append("text")
+      .attr("fill", color(i)) // Use the color scale here
+      .attr("stroke", "none")
+      .attr("x", x(2023) + 10) // Adjust the x position to be within the chart area
+      .attr("y", y(maxCountryValue)) // Position based on max value
+      .attr("dy", ".35em")
+      .attr("text-anchor", "start")
+      .text(countryData["Country Name"]);
   });
   //Create Title
   svg
@@ -92,12 +94,14 @@ d3.csv("Data.csv").then((data) => {
 
 
   svg
-  .append("text")
-  .attr("transform", "rotate(-90)")
-  .attr("y", -40)
-  .attr("x", -200)
-  .attr("dy", "1em")
-  .style("font-family", "sans-serif")
-  .style("font-size", "15px")
-  .text("Unemployment Rate (Percent)");
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -40)
+    .attr("x", -200)
+    .attr("dy", "1em")
+    .style("font-family", "sans-serif")
+    .style("font-size", "15px")
+    .text("Unemployment Rate (Percent)");
+
+
 });
