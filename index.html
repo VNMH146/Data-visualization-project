@@ -2,14 +2,31 @@
 <html>
 
 <head>
-  <title>Unemployment Rate Bar Chart</title>
+  <title>Unemployment Rate Charts</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
   <script src="https://d3js.org/d3.v5.min.js"></script>
+
 </head>
 
 <body>
-  <div id="chart"></div>
-  <div id="chart2"></div>
-  <select id="yearSelect"></select>
+  <header>
+    <h1>Unemployment Rate Charts</h1>
+  </header>
+  <main>
+    <section>
+      <h2>Chart 1</h2>
+      <div id="chart"></div>
+    </section>
+    <section>
+      <h2>Chart 2</h2>
+      <div id="chart2"></div>
+      <label for="yearSelect">Select Year:</label>
+      <select id="yearSelect"></select>
+    </section>
+  </main>
+  <footer>
+    <p>© 2022 Unemployment Rate Charts</p>
+  </footer>
   <script src="main.js"></script>
   <script src="linechart.js"></script>
 </body>
