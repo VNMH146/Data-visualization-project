@@ -25,8 +25,8 @@ d3.csv("Data.csv").then((data) => {
   // Create the scales
   const x = d3.scaleLinear().range([0, width]);
   const y = d3.scaleLinear().range([height, 0]);
+  const color = d3.scaleOrdinal(d3.schemeCategory20);
 
-  const color = d3.scaleOrdinal(d3.schemeCategory10);
   // Set the domains of the scales
   x.domain([2010, 2023]); // Assuming years from 2010 to 2023
   y.domain([0, d3.max(data, (d) => d3.max(d3.values(d)))]);
@@ -39,6 +39,7 @@ d3.csv("Data.csv").then((data) => {
 
   // Add the y-axis
   svg.append("g").call(d3.axisLeft(y));
+
 
   // Create the linechart
   const line = d3
@@ -108,5 +109,32 @@ d3.csv("Data.csv").then((data) => {
 
 
 
+  const countryNames = data.map(d => d["Unemployment rate (Percent)"]);
+  color.domain(countryNames);
 
+  // Create a legend
+  const legend = svg.selectAll(".legend")
+    .data(color.domain())
+    .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+
+  // Draw legend colored rectangles
+  legend.append("rect")
+    .filter(function (d, i) { return i !== 0; }) // Exclude the first element
+    .attr("x", width + margin.right - 150) // Adjust this value to move the rectangles outside of the chart window
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", color);
+
+  // Draw legend text with countries name
+  legend.append("text")
+    .attr("x", width - 18 + 65) // Adjust this value to place the text to the right of the rectangles
+    .attr("y", 9)
+    .attr("dy", ".35em")
+    .style("text-anchor", "start") // Change this to "start" to left-align the text
+    .style("font-family", "sans-serif")
+    .style("font-size", "12px")
+    .text(function (d) { return d; })
+    .attr("fill", "black");
 });

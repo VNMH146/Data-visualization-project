@@ -1,23 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useData } from './useData';
-import { Marks } from './Marks';
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
 
-const width = 960;
-const height = 500;
+// Map and projection. Try:  d3.geoAiry() / d3.geoAitoff() / d3.geoArmadillo() / d3.geoAugust() / d3.geoAzimuthalEqualArea() / d3.geoAzimuthalEquidistant() and more
+var projection = d3.geoAitoff()
+    .scale(width / 1.3 / Math.PI)
+    .translate([width / 2, height / 2])
 
-const App = () => {
-    const data = useData();
+// Load external data and boot
+d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function (data) {
 
-    if (!data) {
-        return <pre>Loading...</pre>;
-    }
-
-    return (
-        <svg width={width} height={height}>
-            <Marks data={data} />
-        </svg>
-    );
-};
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);
+    // Draw the map
+    svg.append("g")
+        .selectAll("path")
+        .data(data.features)
+        .enter().append("path")
+        .attr("fill", "#69b3a2")
+        .attr("d", d3.geoPath()
+            .projection(projection)
+        )
+        .style("stroke", "#fff")
+})
