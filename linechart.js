@@ -102,6 +102,4 @@ d3.csv("Data.csv").then((data) => {
     .style("font-family", "sans-serif")
     .style("font-size", "15px")
     .text("Unemployment Rate (Percent)");
-
-
 });
