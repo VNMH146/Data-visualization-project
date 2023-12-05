@@ -53,11 +53,11 @@ footer {
 
 #yearSelect {
   display: block;
-  width: 50%;
+  width: 20%;
   height: 30px;
   margin-top: 10px;
   padding: 5px;
-  border: none;
+  border: 1px solid;
   border-radius: 5px;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
   font-size: 16px;

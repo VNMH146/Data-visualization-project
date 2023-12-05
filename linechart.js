@@ -1,3 +1,5 @@
+
+
 d3.csv("Data.csv").then((data) => {
   // Parse the data
   data.forEach((d) => {
@@ -7,7 +9,7 @@ d3.csv("Data.csv").then((data) => {
   });
 
   // Define the dimensions of the chart
-  const margin = { top: 30, right: 170, bottom: 100, left: 50 };
+  const margin = { top: 30, right: 170, bottom: 60, left: 50 };
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
@@ -58,7 +60,8 @@ d3.csv("Data.csv").then((data) => {
       .attr("fill", "none")
       .attr("stroke", color(i)) // Use the color scale here
       .attr("stroke-width", 1.5)
-      .attr("d", line);
+      .attr("d", line)
+
 
     const maxCountryValue = d3.max(countryValues);
 
@@ -76,7 +79,7 @@ d3.csv("Data.csv").then((data) => {
   svg
     .append("text")
     .attr("x", width / 2)
-    .attr("y", height - 420)
+    .attr("y", height - 385)
     .attr("text-anchor", "middle")
     .style("font-family", "sans-serif")
     .style("font-size", "20px")
@@ -102,6 +105,8 @@ d3.csv("Data.csv").then((data) => {
     .style("font-family", "sans-serif")
     .style("font-size", "15px")
     .text("Unemployment Rate (Percent)");
+
+
 
 
 });

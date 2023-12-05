@@ -8,7 +8,7 @@ d3.csv("Data.csv").then((data) => {
   });
 
   // Define the dimensions of the second chart
-  const margin2 = { top: 120, right: 20, bottom: 60, left: 100 };
+  const margin2 = { top: 50, right: 20, bottom: 60, left: 100 };
   const width2 = 960 - margin2.left - margin2.right;
   const height2 = 500 - margin2.top - margin2.bottom;
 
@@ -44,7 +44,7 @@ d3.csv("Data.csv").then((data) => {
   svg2
     .append("text")
     .attr("x", width2 / 2)
-    .attr("y", -10)
+    .attr("y", -35)
     .attr("text-anchor", "middle")
     .style("font-family", "sans-serif")
     .style("font-size", "20px")
