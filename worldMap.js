@@ -5,8 +5,8 @@ var svg = d3.select("svg"),
 
 // Define the projection for the map
 var projection = d3.geoAitoff()
-    .scale(width / 1.3 / Math.PI)
-    .translate([width / 2, height / 2]);
+    .scale(width / 1.4 / Math.PI)
+    .translate([width / 2.5, height / 2]);
 
 // Create a tooltip
 var tooltip = d3.select("body").append("div")
