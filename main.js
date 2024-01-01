@@ -1,5 +1,5 @@
 
-d3.csv("Data.csv").then((data) => {
+d3.csv("newdata.csv").then((data) => {
   // Parse the data
   data.forEach((d) => {
     for (let i = 2010; i <= 2023; i++) {
@@ -8,9 +8,9 @@ d3.csv("Data.csv").then((data) => {
   });
 
   // Define the dimensions of the second chart
-  const margin2 = { top: 50, right: 20, bottom: 60, left: 100 };
-  const width2 = 960 - margin2.left - margin2.right;
-  const height2 = 500 - margin2.top - margin2.bottom;
+  const margin2 = { top: 50, right: 20, bottom: 50, left: 150 };
+  const width2 = 990 - margin2.left - margin2.right;
+  const height2 = 700 - margin2.top - margin2.bottom;
 
   // Create the SVG container for the second chart
   const svg2 = d3
@@ -120,7 +120,7 @@ d3.csv("Data.csv").then((data) => {
     svg2.selectAll(".bar")
       .data(data)
       .transition() // Add a transition to animate the changes
-      .duration(1000)
+      .duration(2000)
       .attr("width", (d) => x2(d[selectedYear]))
       .attr("fill", (d) => color2(d[selectedYear]));
   }
