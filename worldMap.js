@@ -44,7 +44,7 @@ var colorScale = d3.scaleSequential(d3.interpolateReds)
 // Load both GeoJSON and CSV data
 d3.queue()
     .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-    .defer(d3.csv, "Data.csv", function (d) {
+    .defer(d3.csv, "newdata.csv", function (d) {
         return {
             Country: d['Unemployment rate (Percent)'],
             ...d
