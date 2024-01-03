@@ -86,9 +86,3 @@ section {
   padding: 5px;
   opacity: 0;
 }
-
-.highlighted {
-  stroke: #ff0;
-  /* Yellow stroke */
-  stroke-width: 3px;
-}

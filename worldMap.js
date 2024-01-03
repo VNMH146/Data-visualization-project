@@ -40,45 +40,26 @@ function searchAndZoom() {
         // Zoom to the country
         zoomToCountry(countryFeature);
 
-        // Highlight the country
-        d3.selectAll('path')
-            .filter(function (d) { return d.properties.name === countryFeature.properties.name; })
-            .classed('highlighted', true);
+        // Highlight the country in green for 1 second
+        var countryPath = d3.selectAll('path')
+            .filter(function (d) { return d.properties.name === countryFeature.properties.name; });
+
+        countryPath.classed('highlighted', true)
+            .style('fill', 'green');
+
+        setTimeout(function () {
+            countryPath.classed('highlighted', false)
+                .style('fill', function (d) {
+                    var country = unemploymentData.find(c => c.Country === d.properties.name);
+                    return country ? colorScale(country[selectedYear]) : "#ccc";
+                });
+        }, 100);
+
     } else {
         alert("Country not found!");
     }
 }
 
-function zoomToCountry(d) {
-    var bounds = d3.geoPath().projection(projection).bounds(d);
-    var dx = bounds[1][0] - bounds[0][0];
-    var dy = bounds[1][1] - bounds[0][1];
-    var x = (bounds[0][0] + bounds[1][0]) / 2;
-    var y = (bounds[0][1] + bounds[1][1]) / 2;
-    var scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height)));
-    var translate = [width / 2 - scale * x, height / 2 - scale * y];
-
-    g.transition()
-        .duration(750)
-        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
-
-    clickedCountry = d;
-
-    // Highlight the country
-    d3.selectAll('path')
-        .filter(function (d) { return d === clickedCountry; })
-        .classed('highlighted', true);
-}
-
-function resetZoom() {
-    g.transition()
-        .duration(750)
-        .call(zoom.transform, d3.zoomIdentity);
-    clickedCountry = null;
-
-    d3.selectAll('.highlighted').classed('highlighted', false);
-
-}
 
 // Function to update the map based on selected year
 function updateVisualizationForYear(year, unemploymentData) {
@@ -178,6 +159,21 @@ function zoomToCountry(d) {
         .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 
     clickedCountry = d;
+
+    d3.selectAll('path')
+        .filter(function (p) { return p === d; })
+        .classed('highlighted', true)
+        .style('fill', 'green');
+
+    setTimeout(function () {
+        d3.selectAll('path')
+            .filter(function (p) { return p === d; })
+            .classed('highlighted', false)
+            .style('fill', function (d) {
+                var country = unemploymentData.find(c => c.Country === d.properties.name);
+                return country ? colorScale(country[selectedYear]) : "#ccc";
+            });
+    }, 100);
 }
 
 function resetZoom() {
