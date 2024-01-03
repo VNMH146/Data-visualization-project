@@ -23,9 +23,61 @@ var g = svg.append("g")
     .call(zoom);
 
 var clickedCountry = null;
+var geoData; // Global variable to hold the GeoJSON data
 
 function zoomed() {
     g.attr("transform", d3.event.transform);
+}
+
+function searchAndZoom() {
+    var countryName = document.getElementById('countrySearch').value;
+    var countryFeature = geoData.features.find(d => d.properties.name.toLowerCase() === countryName.toLowerCase());
+
+    if (countryFeature) {
+        // Reset any previous highlights
+        d3.selectAll('.highlighted').classed('highlighted', false);
+
+        // Zoom to the country
+        zoomToCountry(countryFeature);
+
+        // Highlight the country
+        d3.selectAll('path')
+            .filter(function (d) { return d.properties.name === countryFeature.properties.name; })
+            .classed('highlighted', true);
+    } else {
+        alert("Country not found!");
+    }
+}
+
+function zoomToCountry(d) {
+    var bounds = d3.geoPath().projection(projection).bounds(d);
+    var dx = bounds[1][0] - bounds[0][0];
+    var dy = bounds[1][1] - bounds[0][1];
+    var x = (bounds[0][0] + bounds[1][0]) / 2;
+    var y = (bounds[0][1] + bounds[1][1]) / 2;
+    var scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height)));
+    var translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+    g.transition()
+        .duration(750)
+        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
+
+    clickedCountry = d;
+
+    // Highlight the country
+    d3.selectAll('path')
+        .filter(function (d) { return d === clickedCountry; })
+        .classed('highlighted', true);
+}
+
+function resetZoom() {
+    g.transition()
+        .duration(750)
+        .call(zoom.transform, d3.zoomIdentity);
+    clickedCountry = null;
+
+    d3.selectAll('.highlighted').classed('highlighted', false);
+
 }
 
 // Function to update the map based on selected year
@@ -52,8 +104,9 @@ d3.queue()
     })
     .await(ready);
 
-function ready(error, geoData, unemploymentData) {
+function ready(error, worldGeoJSON, unemploymentData) {
     if (error) throw error;
+    geoData = worldGeoJSON;
 
     // Draw the map with GeoJSON data
     g.selectAll("path")

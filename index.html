@@ -31,6 +31,8 @@
       <svg id="my_dataviz" width="1000" height="800"></svg>
       <div id="year-slider">
         <input type="range" min="2010" max="2023" value="2010" id="yearInput" step="1">
+        <input type="text" id="countrySearch" placeholder="Enter country name">
+        <button onclick="searchAndZoom()">Search</button>
         <p>Year: <span id="yearDisplay">2010</span></p>
       </div>
     </section>
