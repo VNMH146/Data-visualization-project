@@ -27,8 +27,7 @@ d3.csv("newdata.csv").then((data) => {
 
   // Set the domains of the scales for the second chart
   y2.domain(data.map((d) => d["Unemployment rate (Percent)"]));
-  x2.domain([0, d3.max(data, (d) => d[2023])]);
-
+  x2.domain([0, 27]);
   // Add the y-axis for the second chart
   svg2
     .append("g")
@@ -78,10 +77,14 @@ d3.csv("newdata.csv").then((data) => {
     .interpolator(d3.interpolateBlues);
 
   // Add the bars for the second chart
-  svg2
+
+  const bars = svg2
     .selectAll(".bar")
     .data(data)
     .enter()
+    .append("g");
+
+  bars
     .append("rect")
     .attr("class", "bar")
     .attr("y", (d) => y2(d["Unemployment rate (Percent)"]))
@@ -89,6 +92,16 @@ d3.csv("newdata.csv").then((data) => {
     .attr("x", 0)
     .attr("width", (d) => x2(d[2023]))
     .attr("fill", (d) => color2(d[2023]));
+
+  // Add text labels to the bars
+  bars
+    .append("text")
+    .attr("class", "label")
+    .attr("y", (d) => y2(d["Unemployment rate (Percent)"]) + y2.bandwidth() / 2 + 4) // Vertically center
+    .attr("x", (d) => x2(d[2023]) + 3) // Slightly offset from the end of the bar
+    .text((d) => d[2023])
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "12px");
 
   // Populate the dropdown with years
   const years = d3.range(2010, 2024);
@@ -111,8 +124,7 @@ d3.csv("newdata.csv").then((data) => {
 
   function updateChart() {
     // Update the x scale domain
-    x2.domain([0, d3.max(data, (d) => d[selectedYear])]);
-
+    x2.domain([0, 27]);
     // Update the color scale domain
     color2.domain([0, d3.max(data, (d) => d[selectedYear])]);
 
@@ -120,9 +132,17 @@ d3.csv("newdata.csv").then((data) => {
     svg2.selectAll(".bar")
       .data(data)
       .transition() // Add a transition to animate the changes
-      .duration(2000)
+      .duration(1000)
       .attr("width", (d) => x2(d[selectedYear]))
       .attr("fill", (d) => color2(d[selectedYear]));
+
+    // Update the text labels
+    svg2.selectAll(".label")
+      .data(data)
+      .transition()
+      .duration(1000)
+      .attr("x", (d) => x2(d[selectedYear]) + 3)
+      .text((d) => d[selectedYear]);
   }
 
   // Call updateChart once to draw the initial chart

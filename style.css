@@ -81,8 +81,104 @@ section {
 
 .tooltip {
   position: absolute;
-  background-color: #fff;
-  border: 1px solid #000;
-  padding: 5px;
+  text-align: center;
+  padding: 8px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
   opacity: 0;
+}
+
+#searchContainer {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+  padding: 5px;
+}
+
+#countrySearch {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px #ddd;
+  width: 200px;
+  margin-right: 8px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #5cb85c;
+  /* Bootstrap 'success' green */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #007bff;
+  /* A darker shade of green */
+}
+
+button:focus {
+  outline: none;
+  /* Removes the blue border */
+}
+
+input[type=range] {
+  height: 10px;
+  /* Specified height of the slider line */
+  background: #d3d3d3;
+  /* Background of the slider line */
+  outline: none;
+  /* Remove the outline on focus */
+  opacity: 10.7;
+  /* Set the transparency for a lighter look */
+  transition: opacity 0.2s;
+  /* Transition for the slider thumb */
+}
+
+/* Style for the slider thumb */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  width: 16px;
+  /* Width of the thumb */
+  height: 16px;
+  /* Height of the thumb */
+  background: #007bff;
+  /* Background color of the thumb */
+  cursor: pointer;
+  /* Cursor to indicate the slider can be moved */
+  border-radius: 50%;
+  /* Rounded corners of the thumb */
+  border: 1px solid #007bff;
+  /* Border color to match the thumb fill */
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 16px;
+  /* Width of the thumb */
+  height: 16px;
+  /* Height of the thumb */
+  background: #007bff;
+  /* Background color of the thumb */
+  cursor: pointer;
+  /* Cursor to indicate the slider can be moved */
+  border-radius: 50%;
+  /* Rounded corners of the thumb */
+  border: 1px solid #007bff;
+  /* Border color to match the thumb fill */
+}
+
+/* Style for the slider thumb on hover */
+input[type=range]:hover::-webkit-slider-thumb,
+input[type=range]:hover::-moz-range-thumb {
+  background: #0056b3;
+  /* Slightly darker shade on hover */
 }

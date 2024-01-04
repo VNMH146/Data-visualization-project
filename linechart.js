@@ -1,6 +1,6 @@
 
 
-d3.csv("Data.csv").then((data) => {
+d3.csv("newdata.csv").then((data) => {
   // Parse the data
   data.forEach((d) => {
     for (let i = 2010; i <= 2023; i++) {
@@ -40,6 +40,57 @@ d3.csv("Data.csv").then((data) => {
   // Add the y-axis
   svg.append("g").call(d3.axisLeft(y));
 
+  function updateChart(selectedCountry) {
+    // Filter data to return only the selected country
+    let filteredData = data.filter(d => d["Country Name"] === selectedCountry);
+
+    // Remove the existing line (if any)
+    svg.selectAll(".line").remove();
+
+    // Draw the line for the selected country
+    filteredData.forEach((countryData) => {
+      const countryValues = d3.range(2010, 2024).map(year => ({ year: year, rate: countryData[year] }));
+
+      svg
+        .append("path")
+        .datum(countryValues)
+        .attr("class", "line")
+        .attr("fill", "none")
+        .attr("stroke", "steelblue") // Or use color(i) if you have a color scale
+        .attr("stroke-width", 2)
+        .attr("d", line);
+    });
+  }
+
+
+  // Add Tooltip div
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px");
+
+  // Define mouseover, mousemove, and mouseout functions
+  function mouseover(event, d) {
+    tooltip.transition().duration(200).style("opacity", .9);
+    d3.selectAll('.line').style('opacity', 0.1);
+    d3.select(this).style('stroke-width', '4').style('opacity', 1);
+  }
+
+  function mousemove(event, d, countryName) {
+    tooltip.html("Country: " + countryName + "<br>Year: " + d.year + "<br>Rate: " + d.rate + "%")
+      .style("left", (event.pageX) + "px")
+      .style("top", (event.pageY - 28) + "px");
+  }
+
+  function mouseout(event, d) {
+    tooltip.transition().duration(500).style("opacity", 0);
+    d3.selectAll('.line').style('stroke-width', '1.5').style('opacity', 1);
+  }
 
   // Create the linechart
   const line = d3
@@ -75,6 +126,18 @@ d3.csv("Data.csv").then((data) => {
       .attr("dy", ".35em")
       .attr("text-anchor", "start")
       .text(countryData["Country Name"]);
+
+    svg
+      .append("path")
+      .datum(countryValues)
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", color(i)) // Use the color scale here
+      .attr("stroke-width", 1.5)
+      .attr("d", line)
+      .on("mouseover", mouseover) // Add mouseover event
+      .on("mousemove", (event) => mousemove(event, countryData, countryData["Country Name"])) // Add mousemove event
+      .on("mouseout", mouseout); // Add mouseout event
   });
   //Create Title
   svg
@@ -112,12 +175,32 @@ d3.csv("Data.csv").then((data) => {
   const countryNames = data.map(d => d["Unemployment rate (Percent)"]);
   color.domain(countryNames);
 
+
+
   // Create a legend
+  // const legend = svg.selectAll(".legend")
+  //   .data(color.domain())
+  //   .enter().append("g")
+  //   .attr("class", "legend")
+  //   .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+  // Add the legend with toggle functionality
   const legend = svg.selectAll(".legend")
     .data(color.domain())
     .enter().append("g")
     .attr("class", "legend")
-    .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+    .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; })
+    .style("cursor", "pointer") // Add pointer on hover
+    .on("click", function (d) {
+      // Determine if current line is visible
+      var active = d.active ? false : true,
+        newOpacity = active ? 0 : 1;
+      // Hide or show the elements based on the ID
+      d3.select("#line" + d.replace(/ /g, "")).style("opacity", newOpacity);
+      // Update whether or not the elements are active
+      d.active = active;
+    });
+
+
 
   // Draw legend colored rectangles
   legend.append("rect")
@@ -137,4 +220,14 @@ d3.csv("Data.csv").then((data) => {
     .style("font-size", "12px")
     .text(function (d) { return d; })
     .attr("fill", "black");
+
+  // Add IDs to lines and legend items for toggle functionality
+  svg.selectAll(".line").attr("id", function (d) {
+    return "line" + d["Country Name"].replace(/ /g, "");
+  });
+  legend.append("text").attr("id", function (d) {
+    return "legend" + d.replace(/ /g, "");
+  });
+
+
 });
