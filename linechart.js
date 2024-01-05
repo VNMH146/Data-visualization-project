@@ -80,23 +80,38 @@ d3.csv("newdata.csv").then((data) => {
       .merge(lines)
       .attr("class", "line")
       .attr("d", d => line(d.values))
-      .style("stroke", (d, i) => color(i))
-      .on("mouseover", function (d) {
-        tooltip.transition()
-          .duration(200)
-          .style("opacity", .9);
-        tooltip.html("Country: " + d.name + "<br/>" + "Year range: 2010-2023")
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
-      })
-      .on("mouseout", function (d) {
-        tooltip.transition()
-          .duration(500)
-          .style("opacity", 0);
-      });
+      .style("stroke", (d, i) => color(i));
 
     // Exit
     lines.exit().remove();
+
+    // Remove old circles
+    svg.selectAll(".dot").remove();
+
+    // Add circles for each data point
+    filteredData.forEach((countryData, index) => {
+      svg.selectAll(".dot" + index)
+        .data(countryData.values)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("cx", d => x(d.year))
+        .attr("cy", d => y(d.rate))
+        .attr("r", 5)
+        .style("opacity", 0) // Invisible but still there for mouseover
+        .on("mouseover", d => {
+          tooltip1.transition()
+            .duration(200)
+            .style("opacity", .9);
+          tooltip1.html("Country: " + countryData.name + "<br/>Year: " + d.year.getFullYear() + "<br/>Rate: " + d.rate + "%")
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout", d => {
+          tooltip1.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
+    });
   }
 
   // Update chart based on table selection
