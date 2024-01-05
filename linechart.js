@@ -18,7 +18,7 @@ d3.csv("newdata.csv").then((data) => {
   });
 
   // Define dimensions and scales
-  const margin = { top: 20, right: 80, bottom: 30, left: 50 },
+  const margin = { top: 50, right: 80, bottom: 60, left: 50 },
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -42,6 +42,28 @@ d3.csv("newdata.csv").then((data) => {
   svg.append("g")
     .attr("class", "axis")
     .call(d3.axisLeft(y));
+
+  // Add X-Axis label
+  svg.append("text")
+    .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 20) + ")")
+    .style("text-anchor", "middle")
+    .text("Year");
+
+  // Add Y-Axis label
+  svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - (height / 2))
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .text("Unemployment Rate (%)");
+
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")
+    .style("font-size", "24px")
+    .text("Unemployment Rate of Developed Countries");
 
   // Line generator
   const line = d3.line()

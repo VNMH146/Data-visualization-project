@@ -251,3 +251,24 @@ td {
   padding: 5px;
   opacity: 0;
 }
+
+/* svg {
+  width: 100%;
+  height: auto;
+  display: block;
+
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .chart-container,
+  .table-container {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  
+} */
