@@ -1,60 +1,70 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Unemployment Rate Bar Chart</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
-  </head>
 
-  <body>
-    <header>
-      <h1>Unemployment Rate Charts</h1>
-    </header>
-    <main>
-      <section>
-        <h2>Chart 1</h2>
-        <div id="chart"></div>
-        <div>
-          <span class="dropdown-label">Choose country:</span>
-          <select id="countrySelect"></select>
-        </div>
-      </section>
-      <section>
-        <h2>Chart 2</h2>
-        <div id="chart2"></div>
-        <label for="yearSelect">Select Year:</label>
-        <select id="yearSelect"></select>
-      </section>
+<head>
+  <title>Unemployment Rate Bar Chart</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://d3js.org/d3.v5.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
-      <section>
-        <svg id="my_dataviz" width="1000" height="800"></svg>
-        <div id="year-slider">
-          <input
-            type="range"
-            min="2010"
-            max="2023"
-            value="2010"
-            id="yearInput"
-            step="1"
-          />
-          <input
-            type="text"
-            id="countrySearch"
-            placeholder="Enter country name"
-          />
-          <button onclick="searchAndZoom()">Search</button>
-          <p>Year: <span id="yearDisplay">2010</span></p>
+</head>
+
+<body>
+  <header>
+    <h1>Unemployment Rate Charts</h1>
+  </header>
+  <main>
+
+    <section>
+      <h2>Chart 1</h2>
+      <div class="container">
+        <div class="chart-container" id="chart"></div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Select Countries</th>
+              </tr>
+            </thead>
+          </table>
+          <div class="table-scroll">
+            <table id="countryTable">
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="button-container">
+            <button id="clearSelection">Clear All</button>
+          </div>
         </div>
-      </section>
-    </main>
-    <footer>
-      <p>© 2022 Unemployment Rate Charts</p>
-    </footer>
-    <script src="main.js"></script>
-    <script src="linechart.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="worldMap.js"></script>
-  </body>
+      </div>
+    </section>
+
+    <section>
+      <h2>Chart 2</h2>
+      <div id="chart2"></div>
+      <label for="yearSelect">Select Year:</label>
+      <select id="yearSelect"></select>
+    </section>
+
+    <section>
+      <svg id="my_dataviz" width="1000" height="800"></svg>
+      <div id="year-slider">
+        <input type="range" min="2010" max="2023" value="2010" id="yearInput" step="1">
+        <input type="text" id="countrySearch" placeholder="Enter country name">
+        <button onclick="searchAndZoom()">Search</button>
+        <p>Year: <span id="yearDisplay">2010</span></p>
+      </div>
+    </section>
+
+  </main>
+  <footer>
+    <p>© 2022 Unemployment Rate Charts</p>
+  </footer>
+  <script src="main.js"></script>
+  <script src="linechart.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="worldMap.js"></script>
+</body>
+
 </html>

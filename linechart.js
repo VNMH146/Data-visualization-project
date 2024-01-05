@@ -1,97 +1,122 @@
-var svg = d3.select("#chart"),
-  margin = { top: 40, right: 30, bottom: 40, left: 50 },
-  width = 960 - margin.left - margin.right,
-  height = 500 - margin.top - margin.bottom;
+// Load and parse the data
+d3.csv("newdata.csv").then((data) => {
+  const parseYear = d3.timeParse("%Y");
+  const countries = data.map(d => d["Unemployment rate (Percent)"]);
+  const years = d3.range(2010, 2024).map(d => parseYear(d.toString()));
 
-var x = d3.scaleTime().range([0, width]);
-var y = d3.scaleLinear().range([height, 0]);
-
-var line = d3
-  .line()
-  .x(function (d) {
-    return x(d.year);
-  })
-  .y(function (d) {
-    return y(d.value);
+  // Convert data to a suitable format
+  let seriesData = countries.map((country, i) => {
+    return {
+      name: country,
+      values: years.map(year => {
+        return {
+          year: year,
+          rate: +data[i][year.getFullYear()]
+        };
+      })
+    };
   });
 
-svg
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  // Define dimensions and scales
+  const margin = { top: 20, right: 80, bottom: 30, left: 50 },
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
-d3.csv("newdata.csv").then(function (data) {
-  var keys = data.columns.slice(1);
-  var parseTime = d3.timeParse("%Y");
-  var countries = data
-    .map(function (d) {
-      return d["Unemployment rate (Percent)"];
-    })
-    .filter(function (d) {
-      return d;
-    });
+  const x = d3.scaleTime().domain(d3.extent(years)).range([0, width]);
+  const y = d3.scaleLinear().domain([0, d3.max(seriesData, d => d3.max(d.values, v => v.rate))]).range([height, 0]);
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  var select = d3
-    .select("#countrySelect")
-    .on("change", onchange)
-    .selectAll("option")
-    .data(countries)
+  // Create the SVG container
+  const svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Add X and Y axis
+  svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+  svg.append("g")
+    .attr("class", "axis")
+    .call(d3.axisLeft(y));
+
+  // Line generator
+  const line = d3.line()
+    .x(d => x(d.year))
+    .y(d => y(d.rate));
+
+  // Create Tooltip
+  const tooltip1 = d3.select("body").append("div")
+    .attr("class", "tooltip");
+
+  // Create a table for country selection
+  const table = d3.select("#countryTable");
+  const tbody = table.append("tbody");
+  const rows = tbody.selectAll("tr")
+    .data(seriesData)
     .enter()
-    .append("option")
-    .text(function (d) {
-      return d;
+    .append("tr")
+    .on("click", function (d) {
+      d3.select(this).classed("selected", !d3.select(this).classed("selected"));
+      updateSelection();
     });
 
-  function onchange() {
-    var selectedCountry = d3.select("#countrySelect").property("value");
-    updateChart(selectedCountry);
-  }
+  rows.append("td").text(d => d.name);
 
-  function updateChart(country) {
-    var countryData = keys.map(function (year) {
-      return {
-        year: parseTime(year),
-        value: data.find(function (row) {
-          return row["Unemployment rate (Percent)"] === country;
-        })[year],
-      };
-    });
+  // Function to update the chart
+  function update(selectedCountries) {
+    const filteredData = seriesData.filter(d => selectedCountries.includes(d.name));
 
-    x.domain(
-      d3.extent(countryData, function (d) {
-        return d.year;
+    // Bind data
+    const lines = svg.selectAll(".line")
+      .data(filteredData, d => d.name);
+
+    // Enter + update
+    lines.enter()
+      .append("path")
+      .merge(lines)
+      .attr("class", "line")
+      .attr("d", d => line(d.values))
+      .style("stroke", (d, i) => color(i))
+      .on("mouseover", function (d) {
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", .9);
+        tooltip.html("Country: " + d.name + "<br/>" + "Year range: 2010-2023")
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
       })
-    );
-    y.domain([
-      0,
-      d3.max(countryData, function (d) {
-        return d.value;
-      }),
-    ]);
+      .on("mouseout", function (d) {
+        tooltip.transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
 
-    svg.selectAll(".axis").remove();
-    svg.selectAll(".line").remove();
-
-    svg
-      .append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .attr("class", "axis axis--x")
-      .call(d3.axisBottom(x));
-
-    svg
-      .append("g")
-      .attr("class", "axis axis--y")
-      .call(d3.axisLeft(y))
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.71em")
-      .attr("text-anchor", "end")
-      .text("Rate %");
-
-    svg.append("path").datum(countryData).attr("class", "line").attr("d", line);
+    // Exit
+    lines.exit().remove();
   }
 
-  updateChart(countries[0]);
+  // Update chart based on table selection
+  function updateSelection() {
+    const selectedCountries = [];
+    table.selectAll(".selected").each(function (d) {
+      selectedCountries.push(d.name);
+    });
+    update(selectedCountries);
+  }
+
+  function clearSelections() {
+    d3.selectAll("#countryTable tr").classed("selected", false);
+    update([]); // Update the chart with no data
+  }
+
+  // Event listener for the 'Clear All' button
+  d3.select("#clearSelection").on("click", clearSelections);
+
+
+  // Initial chart display
+  update(countries.slice(0, 5)); // Display first 5 countries initially
 });
